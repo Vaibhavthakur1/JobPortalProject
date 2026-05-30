@@ -1,0 +1,111 @@
+<div class="min-h-screen bg-slate-50 pt-28 pb-12 px-4">
+  <div class="max-w-3xl mx-auto">
+    <a routerLink="/my-applications" class="inline-flex items-center gap-2 text-sm font-semibold text-gray-500 hover:text-indigo-600 mb-6 transition-colors">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+      Back to Applications
+    </a>
+
+    <!-- Loading -->
+    <div *ngIf="loading()" class="space-y-4">
+      <div class="animate-pulse h-40 bg-white rounded-2xl"></div>
+      <div class="animate-pulse h-64 bg-white rounded-2xl"></div>
+    </div>
+
+    <!-- Error -->
+    <div *ngIf="!loading() && error()" class="bg-white rounded-2xl p-8 text-center shadow-sm border border-gray-100">
+      <svg class="w-12 h-12 text-red-300 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      <p class="text-red-500 font-bold mb-4">{{ error() }}</p>
+      <a routerLink="/my-applications" class="text-indigo-600 font-semibold hover:underline">← Back to Applications</a>
+    </div>
+
+    <!-- Content -->
+    <div *ngIf="!loading() && !error() && app()">
+      <!-- Header Card -->
+      <div class="bg-white rounded-3xl p-8 shadow-sm border border-gray-100 mb-6">
+        <div class="flex items-start justify-between mb-6">
+          <div class="flex items-center gap-4">
+            <div class="w-14 h-14 bg-indigo-100 rounded-2xl flex items-center justify-center">
+              <svg class="w-7 h-7 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+            </div>
+            <div>
+              <h1 class="text-xl font-black text-gray-900">Application Detail</h1>
+              <p class="text-sm text-gray-400 mt-0.5">ID: {{ app()!.id.slice(0,8) }}...</p>
+            </div>
+          </div>
+          <span class="px-4 py-2 rounded-full text-sm font-bold" [ngClass]="getStatusClass(app()!.status)">
+            {{ app()!.status }}
+          </span>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4 text-sm mb-6">
+          <div class="bg-gray-50 rounded-xl p-4">
+            <p class="text-gray-400 font-semibold mb-1">Job ID</p>
+            <p class="font-bold text-gray-900 truncate">{{ app()!.jobId }}</p>
+          </div>
+          <div class="bg-gray-50 rounded-xl p-4">
+            <p class="text-gray-400 font-semibold mb-1">Applied On</p>
+            <p class="font-bold text-gray-900">{{ app()!.createdAt | date:'mediumDate' }}</p>
+          </div>
+          <div class="bg-gray-50 rounded-xl p-4">
+            <p class="text-gray-400 font-semibold mb-1">Resume ID</p>
+            <p class="font-bold text-gray-900 truncate">{{ app()!.resumeId.slice(0,8) }}...</p>
+          </div>
+          <div class="bg-gray-50 rounded-xl p-4">
+            <p class="text-gray-400 font-semibold mb-1">Withdrawn</p>
+            <p class="font-bold" [ngClass]="app()!.isWithdrawn ? 'text-red-600' : 'text-green-600'">
+              {{ app()!.isWithdrawn ? 'Yes' : 'No' }}
+            </p>
+          </div>
+        </div>
+
+        <!-- Cover Letter -->
+        <div *ngIf="app()!.coverLetter" class="bg-indigo-50 rounded-2xl p-5 mb-6">
+          <p class="text-sm font-black text-indigo-800 mb-2">Cover Letter</p>
+          <p class="text-sm text-indigo-700 leading-relaxed whitespace-pre-line">{{ app()!.coverLetter }}</p>
+        </div>
+
+        <!-- Withdraw Button -->
+        <button
+          *ngIf="!app()!.isWithdrawn && app()!.status !== 'Rejected' && app()!.status !== 'Accepted'"
+          (click)="withdraw()"
+          [disabled]="withdrawing()"
+          class="bg-red-50 text-red-600 border border-red-200 px-6 py-2.5 rounded-xl font-bold text-sm hover:bg-red-100 transition-colors disabled:opacity-50">
+          {{ withdrawing() ? 'Withdrawing...' : 'Withdraw Application' }}
+        </button>
+      </div>
+
+      <!-- Status Timeline -->
+      <div class="bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
+        <h2 class="text-lg font-black text-gray-900 mb-6">Status History</h2>
+
+        <div *ngIf="app()!.history.length === 0" class="text-center py-8">
+          <p class="text-gray-400 font-semibold text-sm">No status changes yet</p>
+        </div>
+
+        <div class="relative">
+          <!-- Vertical line -->
+          <div *ngIf="app()!.history.length > 0" class="absolute left-4 top-2 bottom-2 w-0.5 bg-indigo-100"></div>
+
+          <div class="space-y-6">
+            <div *ngFor="let h of app()!.history; let i = index" class="relative flex gap-5 pl-12">
+              <!-- Dot -->
+              <div class="absolute left-0 w-8 h-8 rounded-full flex items-center justify-center z-10" [ngClass]="i === 0 ? 'bg-indigo-600' : 'bg-indigo-100'">
+                <svg class="w-4 h-4" [ngClass]="i === 0 ? 'text-white' : 'text-indigo-400'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+              </div>
+              <!-- Content -->
+              <div class="flex-1 bg-gray-50 rounded-2xl p-4">
+                <div class="flex items-center gap-2 mb-1 flex-wrap">
+                  <span class="px-2 py-0.5 bg-gray-200 text-gray-600 rounded-lg text-xs font-bold">{{ h.fromStatus }}</span>
+                  <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                  <span class="px-2 py-0.5 rounded-lg text-xs font-bold" [ngClass]="getStatusClass(h.toStatus)">{{ h.toStatus }}</span>
+                </div>
+                <p *ngIf="h.note" class="text-sm text-gray-600 mt-1">{{ h.note }}</p>
+                <p class="text-xs text-gray-400 mt-1">{{ h.changedAt | date:'medium' }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

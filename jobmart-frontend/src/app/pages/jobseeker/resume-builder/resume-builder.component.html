@@ -1,0 +1,192 @@
+<div class="min-h-screen bg-slate-50 pt-28 pb-12 px-4">
+  <div class="max-w-6xl mx-auto">
+    <div class="flex items-center justify-between mb-8">
+      <div>
+        <h1 class="text-3xl font-black text-gray-900 font-headline">Resume Builder</h1>
+        <p class="text-gray-500 mt-1">Create and manage your professional resumes</p>
+      </div>
+      <div class="flex gap-2">
+        <button (click)="showUpload.set(true)" class="bg-white border border-indigo-200 text-indigo-600 px-5 py-2.5 rounded-xl font-bold text-sm hover:bg-indigo-50 transition-colors flex items-center gap-2">
+          <span class="material-symbols-outlined text-base">upload_file</span>Upload Resume
+        </button>
+        <button (click)="showCreate.set(true)" class="bg-indigo-600 text-white px-5 py-2.5 rounded-xl font-bold text-sm hover:bg-indigo-700 transition-colors flex items-center gap-2">
+          <span class="material-symbols-outlined text-base">add</span>New Resume
+        </button>
+      </div>
+    </div>
+
+    <!-- Resume List -->
+    <div *ngIf="loading()" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div *ngFor="let i of [1,2,3]" class="animate-pulse bg-white rounded-2xl h-48"></div>
+    </div>
+
+    <div *ngIf="!loading() && resumes().length === 0" class="text-center py-20 bg-white rounded-3xl border border-gray-100">
+      <span class="material-symbols-outlined text-5xl text-gray-300 mb-3 block">description</span>
+      <p class="text-xl font-bold text-gray-500">No resumes yet</p>
+      <button (click)="showCreate.set(true)" class="mt-4 bg-indigo-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-indigo-700">Create Your First Resume</button>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div *ngFor="let r of resumes()" class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:border-indigo-200 transition-all">
+        <div class="flex items-start justify-between mb-4">
+          <div class="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center">
+            <span class="material-symbols-outlined text-indigo-600">{{ r.resumeType === 'Uploaded' ? 'upload_file' : 'description' }}</span>
+          </div>
+          <div class="flex gap-1 flex-col items-end">
+            <span *ngIf="r.isDefault" class="px-2 py-1 bg-green-100 text-green-700 rounded-lg text-xs font-bold">Default</span>
+            <span *ngIf="r.resumeType === 'Uploaded'" class="px-2 py-1 bg-blue-100 text-blue-700 rounded-lg text-xs font-bold">Uploaded</span>
+          </div>
+        </div>
+        <h3 class="font-black text-gray-900 mb-1">{{ r.title }}</h3>
+        <p class="text-sm text-gray-400 mb-1">{{ r.template }} Template</p>
+        <p class="text-xs text-gray-400 mb-4">{{ r.personal?.fullName }}</p>
+        <div class="flex gap-2 flex-wrap">
+          <button *ngIf="!r.isDefault" (click)="setDefault(r.id)" class="text-xs font-semibold text-indigo-600 px-3 py-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 transition-colors">Set Default</button>
+          <button (click)="download(r)" class="text-xs font-semibold text-gray-600 px-3 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors flex items-center gap-1">
+            <span class="material-symbols-outlined text-sm">download</span>{{ r.resumeType === 'Uploaded' ? 'Download' : 'Export' }}
+          </button>
+          <button (click)="deleteResume(r.id)" class="text-xs font-semibold text-red-500 px-3 py-1.5 rounded-lg bg-red-50 hover:bg-red-100 transition-colors">Delete</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Create Resume Modal -->
+    <div *ngIf="showCreate()" class="fixed inset-0 bg-black/50 z-50 flex items-start justify-center p-4 overflow-y-auto">
+      <div class="bg-white rounded-3xl p-8 w-full max-w-2xl shadow-2xl my-8 animate-scale-in">
+        <div class="flex items-center justify-between mb-6">
+          <h2 class="text-xl font-black text-gray-900">Create New Resume</h2>
+          <button (click)="showCreate.set(false)" class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center hover:bg-gray-200">
+            <span class="material-symbols-outlined text-base">close</span>
+          </button>
+        </div>
+
+        <!-- Step Indicator -->
+        <div class="flex items-center gap-2 mb-8 overflow-x-auto pb-2">
+          <div *ngFor="let s of steps; let i = index" class="flex items-center gap-2 flex-shrink-0">
+            <div class="flex items-center gap-2">
+              <div class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-black transition-all" [ngClass]="currentStep() === i ? 'bg-indigo-600 text-white' : isPastStep(i) ? 'bg-green-500 text-white' : 'bg-gray-100 text-gray-400'">
+                <span *ngIf="isPastStep(i)" class="material-symbols-outlined text-sm">check</span>
+                <span *ngIf="!isPastStep(i)">{{ i + 1 }}</span>
+              </div>
+              <span class="text-xs font-semibold" [ngClass]="currentStep() === i ? 'text-indigo-600' : 'text-gray-400'">{{ s }}</span>
+            </div>
+            <div *ngIf="i < steps.length - 1" class="w-6 h-px bg-gray-200"></div>
+          </div>
+        </div>
+
+        <form [formGroup]="resumeForm">
+          <!-- Step 0: Basic Info -->
+          <div *ngIf="currentStep() === 0" class="space-y-4">
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Resume Title</label>
+              <input formControlName="title" type="text" placeholder="e.g. Software Engineer Resume" class="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-gray-50" />
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Template</label>
+              <div class="grid grid-cols-2 gap-3">
+                <div *ngFor="let t of templates" (click)="resumeForm.get('template')?.setValue(t)" class="p-4 border-2 rounded-xl cursor-pointer transition-all text-center" [ngClass]="resumeForm.get('template')?.value === t ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200 hover:border-indigo-300'">
+                  <span class="material-symbols-outlined text-2xl mb-1 block" [ngClass]="resumeForm.get('template')?.value === t ? 'text-indigo-600' : 'text-gray-400'">description</span>
+                  <p class="text-sm font-bold" [ngClass]="resumeForm.get('template')?.value === t ? 'text-indigo-700' : 'text-gray-600'">{{ t }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 1: Personal Info -->
+          <div *ngIf="currentStep() === 1" formGroupName="personal" class="space-y-4">
+            <div class="grid grid-cols-2 gap-4">
+              <div><label class="block text-sm font-semibold text-gray-700 mb-2">Full Name</label><input formControlName="fullName" type="text" class="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-gray-50" /></div>
+              <div><label class="block text-sm font-semibold text-gray-700 mb-2">Email</label><input formControlName="email" type="email" class="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-gray-50" /></div>
+              <div><label class="block text-sm font-semibold text-gray-700 mb-2">Phone</label><input formControlName="phone" type="text" class="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-gray-50" /></div>
+              <div><label class="block text-sm font-semibold text-gray-700 mb-2">Location</label><input formControlName="location" type="text" class="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-gray-50" /></div>
+              <div><label class="block text-sm font-semibold text-gray-700 mb-2">LinkedIn URL</label><input formControlName="linkedInUrl" type="url" class="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-gray-50" /></div>
+              <div><label class="block text-sm font-semibold text-gray-700 mb-2">GitHub URL</label><input formControlName="gitHubUrl" type="url" class="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-gray-50" /></div>
+            </div>
+            <div><label class="block text-sm font-semibold text-gray-700 mb-2">Professional Summary</label><textarea formControlName="summary" rows="3" class="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-gray-50 resize-none"></textarea></div>
+          </div>
+
+          <!-- Step 2: Skills -->
+          <div *ngIf="currentStep() === 2" class="space-y-4">
+            <div class="flex gap-2">
+              <input #skillInput type="text" placeholder="Add a skill..." class="flex-1 border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-gray-50" (keydown.enter)="addSkill(skillInput.value); skillInput.value = ''; $event.preventDefault()" />
+              <button type="button" (click)="addSkill(skillInput.value); skillInput.value = ''" class="bg-indigo-600 text-white px-4 py-3 rounded-xl font-bold hover:bg-indigo-700">Add</button>
+            </div>
+            <div class="flex flex-wrap gap-2">
+              <span *ngFor="let skill of skills(); let i = index" class="flex items-center gap-1 px-3 py-1.5 bg-indigo-100 text-indigo-700 rounded-xl text-sm font-semibold">
+                {{ skill }}
+                <button type="button" (click)="removeSkill(i)" class="ml-1 hover:text-red-500"><span class="material-symbols-outlined text-sm">close</span></button>
+              </span>
+            </div>
+          </div>
+
+          <!-- Step 3: Summary/Submit -->
+          <div *ngIf="currentStep() === 3" class="space-y-4">
+            <div class="bg-indigo-50 rounded-2xl p-6">
+              <h3 class="font-black text-gray-900 mb-3">Resume Summary</h3>
+              <div class="space-y-2 text-sm text-gray-600">
+                <p><strong>Title:</strong> {{ resumeForm.get('title')?.value }}</p>
+                <p><strong>Template:</strong> {{ resumeForm.get('template')?.value }}</p>
+                <p><strong>Name:</strong> {{ resumeForm.get('personal.fullName')?.value }}</p>
+                <p><strong>Skills:</strong> {{ skills().join(', ') || 'None added' }}</p>
+              </div>
+            </div>
+            <div *ngIf="createError()" class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm">{{ createError() }}</div>
+          </div>
+        </form>
+
+        <!-- Navigation -->
+        <div class="flex justify-between mt-8">
+          <button *ngIf="currentStep() !== 0" (click)="prevStep()" class="px-6 py-3 bg-gray-100 text-gray-700 rounded-xl font-semibold hover:bg-gray-200">Back</button>
+          <div *ngIf="currentStep() === 0"></div>
+          <button *ngIf="currentStep() !== steps.length - 1" (click)="nextStep()" class="px-6 py-3 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700">Next</button>
+          <button *ngIf="currentStep() === steps.length - 1" (click)="createResume()" [disabled]="creating()" class="px-6 py-3 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 disabled:opacity-50">
+            {{ creating() ? 'Creating...' : 'Create Resume' }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Upload Resume Modal -->
+    <div *ngIf="showUpload()" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+      <div class="bg-white rounded-3xl p-8 w-full max-w-md shadow-2xl">
+        <div class="flex items-center justify-between mb-6">
+          <h2 class="text-xl font-black text-gray-900">Upload Resume</h2>
+          <button (click)="showUpload.set(false); uploadError.set('')" class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center hover:bg-gray-200">
+            <span class="material-symbols-outlined text-base">close</span>
+          </button>
+        </div>
+
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-2">Resume Title</label>
+            <input [(ngModel)]="uploadTitle" type="text" placeholder="e.g. My Software Engineer Resume" class="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-gray-50" />
+          </div>
+
+          <!-- Drop zone -->
+          <div class="border-2 border-dashed rounded-2xl p-8 text-center transition-colors"
+            [ngClass]="uploadFile() ? 'border-indigo-400 bg-indigo-50' : 'border-gray-200 hover:border-indigo-300'"
+            (dragover)="$event.preventDefault()"
+            (drop)="onDrop($event)">
+            <span class="material-symbols-outlined text-4xl mb-3 block" [ngClass]="uploadFile() ? 'text-indigo-500' : 'text-gray-300'">upload_file</span>
+            <p *ngIf="!uploadFile()" class="text-sm font-semibold text-gray-500 mb-2">Drag & drop your resume here</p>
+            <p *ngIf="uploadFile()" class="text-sm font-bold text-indigo-700 mb-2">{{ uploadFile()!.name }}</p>
+            <p class="text-xs text-gray-400 mb-3">PDF only — max 5 MB</p>
+            <label class="cursor-pointer inline-block bg-indigo-600 text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-indigo-700 transition-colors">
+              {{ uploadFile() ? 'Change File' : 'Browse File' }}
+              <input type="file" accept=".pdf" class="hidden" (change)="onFileSelect($event)" />
+            </label>
+          </div>
+
+          <div *ngIf="uploadError()" class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm">{{ uploadError() }}</div>
+
+          <div class="flex gap-3">
+            <button (click)="showUpload.set(false); uploadError.set('')" class="flex-1 bg-gray-100 text-gray-700 py-3 rounded-xl font-semibold hover:bg-gray-200">Cancel</button>
+            <button (click)="submitUpload()" [disabled]="!uploadFile() || uploading()" class="flex-1 bg-indigo-600 text-white py-3 rounded-xl font-bold hover:bg-indigo-700 disabled:opacity-50 transition-colors">
+              {{ uploading() ? 'Uploading...' : 'Upload Resume' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

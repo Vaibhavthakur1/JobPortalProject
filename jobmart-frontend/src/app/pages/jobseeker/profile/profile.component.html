@@ -1,0 +1,283 @@
+<!-- Profile Page -->
+<div class="min-h-screen bg-slate-50 pt-28 pb-12 px-4">
+
+  <!-- Gradient Banner -->
+  <div class="max-w-4xl mx-auto mb-[-3rem] relative z-0">
+    <div class="h-48 rounded-3xl bg-gradient-to-br from-indigo-600 via-indigo-500 to-purple-600 shadow-xl overflow-hidden relative">
+      <div class="absolute inset-0 opacity-20" style="background-image: url('data:image/svg+xml,&lt;svg width=&quot;60&quot; height=&quot;60&quot; viewBox=&quot;0 0 60 60&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot;&gt;&lt;g fill=&quot;none&quot; fill-rule=&quot;evenodd&quot;&gt;&lt;g fill=&quot;%23ffffff&quot; fill-opacity=&quot;0.15&quot;&gt;&lt;path d=&quot;M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z&quot;/&gt;&lt;/g&gt;&lt;/g&gt;&lt;/svg&gt;'); background-size: 30px 30px;"></div>
+    </div>
+  </div>
+
+  <div class="max-w-4xl mx-auto relative z-10">
+
+    <!-- Profile Header Card -->
+    <div class="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-gray-100 mb-6 animate-fade-in">
+      <div class="flex flex-col sm:flex-row items-center sm:items-end gap-5">
+        <!-- Avatar -->
+        <div class="w-24 h-24 rounded-2xl ring-4 ring-white shadow-lg overflow-hidden flex-shrink-0 -mt-16 sm:-mt-12 bg-indigo-600">
+          <img [src]="getAvatarUrl(authStore.user()?.fullName || 'User')"
+               alt="Profile Avatar"
+               class="w-full h-full object-cover" />
+        </div>
+        <div class="flex-1 text-center sm:text-left">
+          <h1 class="text-2xl md:text-3xl font-black text-gray-900">{{ authStore.user()?.fullName }}</h1>
+          <p class="text-gray-500 text-sm mt-1">{{ authStore.user()?.email }}</p>
+          <div class="flex items-center justify-center sm:justify-start gap-2 mt-2">
+            <span class="px-3 py-1 bg-indigo-100 text-indigo-700 text-xs font-bold rounded-full">{{ authStore.user()?.role }}</span>
+            <span class="px-3 py-1 bg-emerald-100 text-emerald-700 text-xs font-bold rounded-full">
+              {{ getCompletionPercentage() }}% Complete
+            </span>
+          </div>
+        </div>
+        <!-- Completion ring -->
+        <div class="hidden md:flex flex-col items-center gap-1">
+          <div class="relative w-16 h-16">
+            <svg class="w-16 h-16 -rotate-90" viewBox="0 0 64 64">
+              <circle cx="32" cy="32" r="28" stroke="#e2e8f0" stroke-width="4" fill="none" />
+              <circle cx="32" cy="32" r="28" stroke="#4f46e5" stroke-width="4" fill="none"
+                      stroke-linecap="round"
+                      [attr.stroke-dasharray]="'175.93'"
+                      [attr.stroke-dashoffset]="175.93 - (175.93 * getCompletionPercentage() / 100)"
+                      class="transition-all duration-700 ease-out" />
+            </svg>
+            <span class="absolute inset-0 flex items-center justify-center text-sm font-black text-gray-900">{{ getCompletionPercentage() }}%</span>
+          </div>
+          <span class="text-xs text-gray-400 font-semibold">Profile</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading skeleton -->
+    <div *ngIf="loading()" class="space-y-6">
+      <div class="animate-pulse bg-white rounded-3xl h-64 shadow-sm"></div>
+      <div class="animate-pulse bg-white rounded-3xl h-48 shadow-sm"></div>
+    </div>
+
+    <!-- Form -->
+    <form *ngIf="!loading()" [formGroup]="form" (ngSubmit)="submit()" class="space-y-6">
+
+      <!-- ── About You ─────────────────────────────────────── -->
+      <div class="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-gray-100 profile-section-1">
+        <div class="flex items-center gap-3 mb-6">
+          <div class="w-10 h-10 bg-indigo-100 rounded-xl flex items-center justify-center">
+            <span class="material-symbols-outlined text-indigo-600">person</span>
+          </div>
+          <div>
+            <h2 class="text-lg font-black text-gray-900">About You</h2>
+            <p class="text-xs text-gray-400">Tell recruiters about yourself</p>
+          </div>
+        </div>
+
+        <div class="space-y-5">
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-2">Professional Bio / Headline</label>
+            <textarea formControlName="bio" rows="3"
+              placeholder="e.g. Full-stack developer with 3+ years of experience in React and .NET..."
+              class="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-gray-50 resize-none transition-shadow text-sm"></textarea>
+          </div>
+
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-2">Experience (Years) *</label>
+            <select formControlName="experienceYears"
+              class="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-gray-50 text-sm">
+              <option *ngFor="let y of experienceOptions" [value]="y">
+                {{ y === 0 ? 'Fresher (0 years)' : y + (y === 1 ? ' year' : ' years') }}
+              </option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Job Preferences ───────────────────────────────── -->
+      <div class="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-gray-100 profile-section-2">
+        <div class="flex items-center gap-3 mb-6">
+          <div class="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center">
+            <span class="material-symbols-outlined text-purple-600">work</span>
+          </div>
+          <div>
+            <h2 class="text-lg font-black text-gray-900">Job Preferences</h2>
+            <p class="text-xs text-gray-400">What kind of role are you looking for?</p>
+          </div>
+        </div>
+
+        <div class="space-y-5">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Preferred Role *</label>
+              <input formControlName="preferredRole" type="text"
+                placeholder="e.g. Frontend Developer, Data Analyst..."
+                class="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-gray-50 text-sm" />
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Preferred Location *</label>
+              <input formControlName="preferredLocation" type="text"
+                placeholder="e.g. Mumbai, Bangalore, Remote..."
+                class="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-gray-50 text-sm" />
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-2">Job Type *</label>
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
+              <label *ngFor="let type of jobTypeOptions"
+                class="relative cursor-pointer">
+                <input type="radio" formControlName="jobType" [value]="type" class="sr-only peer" />
+                <div class="px-4 py-2.5 rounded-xl border-2 border-gray-200 text-center text-sm font-semibold text-gray-600
+                            peer-checked:border-indigo-500 peer-checked:bg-indigo-50 peer-checked:text-indigo-700
+                            hover:border-gray-300 transition-all">
+                  {{ type }}
+                </div>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Employment Status ─────────────────────────────── -->
+      <div class="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-gray-100 profile-section-3">
+        <div class="flex items-center gap-3 mb-6">
+          <div class="w-10 h-10 bg-amber-100 rounded-xl flex items-center justify-center">
+            <span class="material-symbols-outlined text-amber-600">business_center</span>
+          </div>
+          <div>
+            <h2 class="text-lg font-black text-gray-900">Employment Status</h2>
+            <p class="text-xs text-gray-400">Are you currently working?</p>
+          </div>
+        </div>
+
+        <div class="space-y-5">
+          <!-- Toggle switch -->
+          <div class="flex items-center justify-between p-4 bg-gray-50 rounded-2xl border border-gray-100">
+            <div>
+              <p class="text-sm font-bold text-gray-900">Currently Working</p>
+              <p class="text-xs text-gray-400 mt-0.5">Toggle if you are currently employed</p>
+            </div>
+            <label class="profile-toggle">
+              <input type="checkbox" formControlName="isCurrentlyWorking" />
+              <span class="profile-toggle-slider"></span>
+            </label>
+          </div>
+
+          <!-- Notice Period — shown only if currently working -->
+          <div *ngIf="isCurrentlyWorking"
+               class="animate-fade-in">
+            <label class="block text-sm font-semibold text-gray-700 mb-2">Notice Period</label>
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2">
+              <label *ngFor="let np of noticePeriodOptions" class="relative cursor-pointer">
+                <input type="radio" formControlName="noticePeriod" [value]="np" class="sr-only peer" />
+                <div class="px-3 py-2.5 rounded-xl border-2 border-gray-200 text-center text-xs font-semibold text-gray-600
+                            peer-checked:border-amber-500 peer-checked:bg-amber-50 peer-checked:text-amber-700
+                            hover:border-gray-300 transition-all">
+                  {{ np }}
+                </div>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Contact Information ───────────────────────────── -->
+      <div class="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-gray-100 profile-section-4">
+        <div class="flex items-center gap-3 mb-6">
+          <div class="w-10 h-10 bg-emerald-100 rounded-xl flex items-center justify-center">
+            <span class="material-symbols-outlined text-emerald-600">call</span>
+          </div>
+          <div>
+            <h2 class="text-lg font-black text-gray-900">Contact Information</h2>
+            <p class="text-xs text-gray-400">How can recruiters reach you?</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-2">Email Address *</label>
+            <div class="relative">
+              <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-lg">mail</span>
+              <input formControlName="email" type="email"
+                placeholder="your.email@example.com"
+                class="w-full border border-gray-200 rounded-xl pl-10 pr-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-gray-50 text-sm" />
+            </div>
+            <p *ngIf="form.get('email')?.touched && form.get('email')?.errors?.['email']"
+               class="text-xs text-red-500 mt-1 font-semibold">Please enter a valid email address</p>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-2">Contact Number *</label>
+            <div class="relative">
+              <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-lg">phone</span>
+              <input formControlName="contactNumber" type="tel"
+                placeholder="+91 98765 43210"
+                class="w-full border border-gray-200 rounded-xl pl-10 pr-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-gray-50 text-sm" />
+            </div>
+            <p *ngIf="form.get('contactNumber')?.touched && form.get('contactNumber')?.errors?.['pattern']"
+               class="text-xs text-red-500 mt-1 font-semibold">Please enter a valid phone number</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Skills ────────────────────────────────────────── -->
+      <div class="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-gray-100 profile-section-5">
+        <div class="flex items-center gap-3 mb-6">
+          <div class="w-10 h-10 bg-cyan-100 rounded-xl flex items-center justify-center">
+            <span class="material-symbols-outlined text-cyan-600">code</span>
+          </div>
+          <div>
+            <h2 class="text-lg font-black text-gray-900">Skills</h2>
+            <p class="text-xs text-gray-400">Add your key skills (press Enter or comma to add)</p>
+          </div>
+        </div>
+
+        <!-- Skills chips -->
+        <div class="flex flex-wrap gap-2 mb-4" *ngIf="skills().length > 0">
+          <span *ngFor="let skill of skills()"
+            class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 text-indigo-700 rounded-full text-sm font-semibold group hover:bg-indigo-100 transition-colors">
+            {{ skill }}
+            <button type="button" (click)="removeSkill(skill)"
+              class="w-4 h-4 rounded-full bg-indigo-200 text-indigo-600 flex items-center justify-center text-xs hover:bg-indigo-300 transition-colors opacity-60 group-hover:opacity-100">
+              ×
+            </button>
+          </span>
+        </div>
+
+        <!-- Skill input -->
+        <div class="flex gap-2">
+          <div class="relative flex-1">
+            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-lg">add_circle</span>
+            <input #skillInput id="skill-input" type="text"
+              placeholder="e.g. JavaScript, React, SQL..."
+              (keydown)="onSkillKeydown($event, skillInput)"
+              class="w-full border border-gray-200 rounded-xl pl-10 pr-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-gray-50 text-sm" />
+          </div>
+          <button type="button" (click)="addSkillFromInput(skillInput)"
+            class="px-5 py-3 bg-indigo-100 text-indigo-700 rounded-xl font-bold text-sm hover:bg-indigo-200 transition-colors">
+            Add
+          </button>
+        </div>
+      </div>
+
+      <!-- ── Error / Success ───────────────────────────────── -->
+      <div *ngIf="error()" class="bg-red-50 border border-red-200 text-red-700 px-5 py-4 rounded-2xl text-sm font-semibold animate-fade-in flex items-center gap-3">
+        <span class="material-symbols-outlined text-red-400">error</span>
+        {{ error() }}
+      </div>
+      <div *ngIf="success()" class="bg-emerald-50 border border-emerald-200 text-emerald-700 px-5 py-4 rounded-2xl text-sm font-semibold animate-fade-in flex items-center gap-3">
+        <span class="material-symbols-outlined text-emerald-500">check_circle</span>
+        Profile saved successfully!
+      </div>
+
+      <!-- ── Action Buttons ────────────────────────────────── -->
+      <div class="flex flex-col sm:flex-row gap-3">
+        <a routerLink="/dashboard"
+          class="flex-1 text-center bg-gray-100 text-gray-700 py-3.5 rounded-2xl font-semibold hover:bg-gray-200 transition-all text-sm">
+          Back to Dashboard
+        </a>
+        <button type="submit" [disabled]="form.invalid || submitting()"
+          class="flex-1 bg-indigo-600 text-white py-3.5 rounded-2xl font-bold hover:bg-indigo-700 disabled:opacity-50 transition-all text-sm shadow-lg shadow-indigo-200 flex items-center justify-center gap-2">
+          <span class="material-symbols-outlined text-lg" *ngIf="!submitting()">save</span>
+          <span *ngIf="submitting()" class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+          {{ submitting() ? 'Saving...' : 'Save Profile' }}
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>

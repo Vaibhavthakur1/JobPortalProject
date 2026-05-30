@@ -1,0 +1,173 @@
+<!-- ── Navbar ─────────────────────────────────────────────────────────── -->
+<nav class="fixed top-4 left-1/2 -translate-x-1/2 w-[96%] max-w-7xl rounded-2xl shadow-lg flex justify-between items-center px-6 py-3 z-50 bg-gray-900/90 backdrop-blur-xl border border-gray-700/50">
+  <a routerLink="/" class="flex items-center gap-2.5 group">
+    <div class="w-8 h-8 bg-indigo-600 rounded-xl flex items-center justify-center shadow-md group-hover:scale-105 transition-transform">
+      <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M20 6h-2.18c.07-.44.18-.88.18-1.36C18 2.06 15.94 0 13.36 0c-1.46 0-2.75.67-3.6 1.72L9 3 8.24 1.72C7.39.67 6.1 0 4.64 0 2.06 0 0 2.06 0 4.64c0 .48.11.92.18 1.36H0v2h20V6zm-9.5 0H4.64C3.16 6 2 4.84 2 3.36S3.16.72 4.64.72c.88 0 1.67.4 2.2 1.03L9 4.5l2.16-2.75c.53-.63 1.32-1.03 2.2-1.03C14.84.72 16 1.88 16 3.36S14.84 6 13.36 6H10.5zM0 8v14h9v-5h2v5h9V8H0zm9 11H2v-2h7v2zm0-4H2v-2h7v2zm0-4H2v-2h7v2zm11 8h-7v-2h7v2zm0-4h-7v-2h7v2zm0-4h-7v-2h7v2z"/>
+      </svg>
+    </div>
+    <span class="text-xl font-black text-white">Job<span class="text-indigo-400">Mart</span></span>
+  </a>
+  <div class="hidden md:flex items-center gap-1">
+    <a href="#features" class="px-4 py-2 rounded-xl text-sm font-semibold text-gray-400 hover:bg-gray-800 hover:text-white transition-all">Features</a>
+    <a href="#how-it-works" class="px-4 py-2 rounded-xl text-sm font-semibold text-gray-400 hover:bg-gray-800 hover:text-white transition-all">How it works</a>
+    <a href="#for-recruiters" class="px-4 py-2 rounded-xl text-sm font-semibold text-gray-400 hover:bg-gray-800 hover:text-white transition-all">For Recruiters</a>
+  </div>
+  <div class="flex items-center gap-2">
+    <a routerLink="/login" class="px-4 py-2 rounded-xl text-sm font-semibold text-gray-300 hover:bg-gray-800 hover:text-white transition-all">Sign in</a>
+    <a routerLink="/register" class="px-4 py-2 rounded-xl text-sm font-semibold bg-indigo-600 text-white hover:bg-indigo-500 transition-all shadow-sm">Get started</a>
+  </div>
+</nav>
+
+<!-- ── Hero ───────────────────────────────────────────────────────────── -->
+<section class="min-h-screen flex items-center justify-center bg-gray-950 px-4 pt-24 pb-16">
+  <div class="max-w-4xl mx-auto text-center">
+    <div class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600/20 text-indigo-400 border border-indigo-500/30 rounded-full text-sm font-semibold mb-6">
+      <span class="w-2 h-2 bg-indigo-400 rounded-full animate-pulse"></span>
+      Now live — find your next opportunity
+    </div>
+    <h1 class="text-5xl md:text-7xl font-black text-white leading-tight mb-6">
+      Land your dream job<br/>
+      <span class="text-indigo-400">faster than ever</span>
+    </h1>
+    <p class="text-xl text-gray-400 max-w-2xl mx-auto mb-10 leading-relaxed">
+      JobMart connects talented professionals with top companies. Build your resume, apply with one click, and track every step of your journey.
+    </p>
+    <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
+      <a routerLink="/register" class="w-full sm:w-auto px-8 py-4 bg-indigo-600 text-white font-bold rounded-2xl hover:bg-indigo-500 transition-all shadow-lg shadow-indigo-900 text-base">
+        Start for free
+      </a>
+      <a routerLink="/login" class="w-full sm:w-auto px-8 py-4 bg-gray-800 text-gray-100 font-bold rounded-2xl hover:bg-gray-700 transition-all border border-gray-700 text-base">
+        Sign in to your account
+      </a>
+    </div>
+
+    <!-- Stats row -->
+    <div class="mt-16 grid grid-cols-3 gap-6 max-w-lg mx-auto">
+      <div>
+        <p class="text-3xl font-black text-white">10k+</p>
+        <p class="text-sm text-gray-500 mt-1">Active jobs</p>
+      </div>
+      <div class="border-x border-gray-800">
+        <p class="text-3xl font-black text-white">5k+</p>
+        <p class="text-sm text-gray-500 mt-1">Companies</p>
+      </div>
+      <div>
+        <p class="text-3xl font-black text-white">50k+</p>
+        <p class="text-sm text-gray-500 mt-1">Job seekers</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Features ───────────────────────────────────────────────────────── -->
+<section id="features" class="py-24 px-4 bg-gray-900">
+  <div class="max-w-7xl mx-auto">
+    <div class="text-center mb-16">
+      <h2 class="text-4xl font-black text-white mb-4">Everything you need to succeed</h2>
+      <p class="text-lg text-gray-400 max-w-xl mx-auto">From resume building to offer tracking — we've got every step covered.</p>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div *ngFor="let feature of features" class="p-6 rounded-2xl border border-gray-800 bg-gray-800/50 hover:border-indigo-500/50 hover:bg-gray-800 transition-all group">
+        <div class="w-12 h-12 rounded-2xl flex items-center justify-center mb-4 transition-colors" [ngClass]="feature.iconBg">
+          <span class="material-symbols-outlined text-2xl" [ngClass]="feature.iconColor">{{ feature.icon }}</span>
+        </div>
+        <h3 class="text-lg font-black text-white mb-2">{{ feature.title }}</h3>
+        <p class="text-gray-400 text-sm leading-relaxed">{{ feature.description }}</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── How it works ───────────────────────────────────────────────────── -->
+<section id="how-it-works" class="py-24 px-4 bg-gray-950">
+  <div class="max-w-5xl mx-auto">
+    <div class="text-center mb-16">
+      <h2 class="text-4xl font-black text-white mb-4">Get hired in 3 simple steps</h2>
+      <p class="text-lg text-gray-400">No fluff, just results.</p>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div *ngFor="let step of steps; let i = index" class="text-center">
+        <div class="w-14 h-14 bg-indigo-600 text-white rounded-2xl flex items-center justify-center text-xl font-black mx-auto mb-5 shadow-lg shadow-indigo-900">
+          {{ i + 1 }}
+        </div>
+        <h3 class="text-lg font-black text-white mb-2">{{ step.title }}</h3>
+        <p class="text-gray-400 text-sm leading-relaxed">{{ step.description }}</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── For Recruiters ─────────────────────────────────────────────────── -->
+<section id="for-recruiters" class="py-24 px-4 bg-gray-900">
+  <div class="max-w-7xl mx-auto">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+      <div>
+        <div class="inline-flex items-center gap-2 px-4 py-2 bg-purple-500/20 text-purple-400 border border-purple-500/30 rounded-full text-sm font-semibold mb-6">
+          <span class="material-symbols-outlined text-base">business_center</span>
+          For Recruiters
+        </div>
+        <h2 class="text-4xl font-black text-white mb-6 leading-tight">Find the right talent, <span class="text-indigo-400">fast</span></h2>
+        <p class="text-gray-400 text-lg mb-8 leading-relaxed">
+          Post jobs, manage applicants through a visual pipeline, and unlock candidate contact details using our points-based wallet system.
+        </p>
+        <ul class="space-y-4 mb-8">
+          <li *ngFor="let perk of recruiterPerks" class="flex items-start gap-3">
+            <div class="w-6 h-6 bg-green-500/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+              <span class="material-symbols-outlined text-green-400 text-sm">check</span>
+            </div>
+            <span class="text-gray-300 text-sm font-medium">{{ perk }}</span>
+          </li>
+        </ul>
+        <a routerLink="/login" class="inline-flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white font-bold rounded-2xl hover:bg-indigo-500 transition-all shadow-lg shadow-indigo-900">
+          Post your first job
+          <span class="material-symbols-outlined text-base">arrow_forward</span>
+        </a>
+      </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div *ngFor="let stat of recruiterStats" class="bg-gray-800 rounded-2xl p-6 border border-gray-700">
+          <div class="w-10 h-10 rounded-xl flex items-center justify-center mb-3" [ngClass]="stat.iconBg">
+            <span class="material-symbols-outlined" [ngClass]="stat.iconColor">{{ stat.icon }}</span>
+          </div>
+          <p class="text-2xl font-black text-white">{{ stat.value }}</p>
+          <p class="text-sm text-gray-400 mt-1">{{ stat.label }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CTA ────────────────────────────────────────────────────────────── -->
+<section class="py-24 px-4 bg-indigo-600">
+  <div class="max-w-3xl mx-auto text-center">
+    <h2 class="text-4xl font-black text-white mb-4">Ready to get started?</h2>
+    <p class="text-indigo-200 text-lg mb-10">Join thousands of job seekers and recruiters already using JobMart.</p>
+    <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
+      <a routerLink="/register" class="w-full sm:w-auto px-8 py-4 bg-white text-indigo-700 font-bold rounded-2xl hover:bg-indigo-50 transition-all shadow-lg text-base">
+        Create free account
+      </a>
+      <a routerLink="/login" class="w-full sm:w-auto px-8 py-4 bg-indigo-700 text-white font-bold rounded-2xl hover:bg-indigo-800 transition-all border border-indigo-500 text-base">
+        Sign in
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ── Footer ─────────────────────────────────────────────────────────── -->
+<footer class="bg-gray-900 text-gray-400 py-12 px-4">
+  <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+    <div class="flex items-center gap-2.5">
+      <div class="w-7 h-7 bg-indigo-600 rounded-xl flex items-center justify-center">
+        <svg class="w-3.5 h-3.5 text-white" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M20 6h-2.18c.07-.44.18-.88.18-1.36C18 2.06 15.94 0 13.36 0c-1.46 0-2.75.67-3.6 1.72L9 3 8.24 1.72C7.39.67 6.1 0 4.64 0 2.06 0 0 2.06 0 4.64c0 .48.11.92.18 1.36H0v2h20V6zm-9.5 0H4.64C3.16 6 2 4.84 2 3.36S3.16.72 4.64.72c.88 0 1.67.4 2.2 1.03L9 4.5l2.16-2.75c.53-.63 1.32-1.03 2.2-1.03C14.84.72 16 1.88 16 3.36S14.84 6 13.36 6H10.5zM0 8v14h9v-5h2v5h9V8H0z"/>
+        </svg>
+      </div>
+      <span class="text-white font-black">Job<span class="text-indigo-400">Mart</span></span>
+    </div>
+    <p class="text-sm">© 2026 JobMart. All rights reserved.</p>
+    <div class="flex items-center gap-4 text-sm">
+      <a routerLink="/login" class="hover:text-white transition-colors">Sign in</a>
+      <a routerLink="/register" class="hover:text-white transition-colors">Register</a>
+    </div>
+  </div>
+</footer>

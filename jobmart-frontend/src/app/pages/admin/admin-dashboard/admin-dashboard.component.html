@@ -1,0 +1,63 @@
+<div class="min-h-screen bg-slate-50 pt-28 pb-12 px-4">
+  <div class="max-w-7xl mx-auto">
+    <div class="mb-8">
+      <div class="flex items-center gap-3 mb-2">
+        <div class="w-10 h-10 bg-indigo-100 rounded-xl flex items-center justify-center">
+          <span class="material-symbols-outlined text-indigo-600">shield_person</span>
+        </div>
+        <h1 class="text-3xl font-black text-gray-900 font-headline">Admin Console</h1>
+      </div>
+      <p class="text-gray-500">Monitor and manage the JobMart platform</p>
+    </div>
+
+    <!-- Stats -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+      <a routerLink="/admin/users" class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:border-blue-200 hover:shadow-md transition-all cursor-pointer group">
+        <div class="flex items-center gap-3 mb-3">
+          <div class="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
+            <span class="material-symbols-outlined text-blue-600">group</span>
+          </div>
+          <span class="text-sm font-semibold text-gray-500 group-hover:text-blue-600 transition-colors">Total Users</span>
+        </div>
+        <p class="text-3xl font-black text-gray-900">{{ totalUsers() }}</p>
+      </a>
+      <a routerLink="/admin/flagged-jobs" class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:border-red-200 hover:shadow-md transition-all cursor-pointer group">
+        <div class="flex items-center gap-3 mb-3">
+          <div class="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center">
+            <span class="material-symbols-outlined text-red-600">flag</span>
+          </div>
+          <span class="text-sm font-semibold text-gray-500 group-hover:text-red-600 transition-colors">Pending Flags</span>
+        </div>
+        <p class="text-3xl font-black text-gray-900">{{ pendingFlags() }}</p>
+      </a>
+      <a routerLink="/admin/audit-logs" class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:border-green-200 hover:shadow-md transition-all cursor-pointer group">
+        <div class="flex items-center gap-3 mb-3">
+          <div class="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center">
+            <span class="material-symbols-outlined text-green-600">history</span>
+          </div>
+          <span class="text-sm font-semibold text-gray-500 group-hover:text-green-600 transition-colors">Audit Logs</span>
+        </div>
+        <p class="text-3xl font-black text-gray-900">{{ auditCount() }}</p>
+      </a>
+    </div>
+
+    <!-- Quick Nav -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <a routerLink="/admin/users" class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:border-indigo-200 hover:shadow-md transition-all group">
+        <span class="material-symbols-outlined text-3xl text-indigo-600 mb-3 block">group</span>
+        <h3 class="font-black text-gray-900 mb-1 group-hover:text-indigo-600 transition-colors">User Management</h3>
+        <p class="text-sm text-gray-500">Manage roles, deactivate accounts</p>
+      </a>
+      <a routerLink="/admin/flagged-jobs" class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:border-red-200 hover:shadow-md transition-all group">
+        <span class="material-symbols-outlined text-3xl text-red-500 mb-3 block">flag</span>
+        <h3 class="font-black text-gray-900 mb-1 group-hover:text-red-600 transition-colors">Flagged Jobs</h3>
+        <p class="text-sm text-gray-500">Review and moderate job listings</p>
+      </a>
+      <a routerLink="/admin/audit-logs" class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:border-green-200 hover:shadow-md transition-all group">
+        <span class="material-symbols-outlined text-3xl text-green-600 mb-3 block">history</span>
+        <h3 class="font-black text-gray-900 mb-1 group-hover:text-green-600 transition-colors">Audit Logs</h3>
+        <p class="text-sm text-gray-500">Track all critical operations</p>
+      </a>
+    </div>
+  </div>
+</div>

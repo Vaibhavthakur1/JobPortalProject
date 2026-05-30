@@ -1,0 +1,122 @@
+<div class="min-h-screen bg-slate-50 pt-28 pb-12 px-4">
+  <div class="max-w-4xl mx-auto">
+    <a routerLink="/jobs" class="inline-flex items-center gap-2 text-sm font-semibold text-gray-500 hover:text-indigo-600 mb-6 transition-colors">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+      </svg>
+      Back to Jobs
+    </a>
+
+    <div *ngIf="loading()" class="animate-pulse space-y-4">
+      <div class="h-48 bg-white rounded-2xl"></div>
+      <div class="h-64 bg-white rounded-2xl"></div>
+    </div>
+
+    <div *ngIf="!loading() && job()">
+      <!-- Job Header -->
+      <div class="bg-white rounded-3xl p-8 shadow-sm border border-gray-100 mb-6">
+        <div class="flex items-start justify-between mb-4">
+          <div class="flex items-center gap-4">
+            <div class="w-16 h-16 bg-indigo-100 rounded-2xl flex items-center justify-center">
+              <svg class="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+              </svg>
+            </div>
+            <div>
+              <h1 class="text-2xl font-black text-gray-900 font-headline">{{ job().title }}</h1>
+              <p class="text-gray-500 font-semibold">{{ job().company }}</p>
+            </div>
+          </div>
+          <span class="px-4 py-2 rounded-full text-sm font-bold bg-indigo-50 text-indigo-700">{{ job().jobType }}</span>
+        </div>
+
+        <div class="flex flex-wrap gap-4 text-sm text-gray-500 mb-6">
+          <span class="flex items-center gap-1.5">
+            <svg class="w-4 h-4 text-indigo-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+            </svg>
+            {{ job().location }}
+          </span>
+          <span class="flex items-center gap-1.5">
+            <svg class="w-4 h-4 text-indigo-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+            </svg>
+            {{ job().experienceYears }}+ years experience
+          </span>
+          <span class="flex items-center gap-1.5">
+            <svg class="w-4 h-4 text-indigo-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+            </svg>
+            {{ job().industry }}
+          </span>
+          <span *ngIf="job().salaryMin" class="flex items-center gap-1.5 text-green-600 font-bold">
+            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            ₹{{ job().salaryMin | number }}{{ job().salaryMax ? ' – ₹' + (job().salaryMax | number) : '+' }}
+          </span>
+        </div>
+
+        <div class="flex flex-wrap gap-2 mb-6">
+          <span *ngFor="let skill of job().requiredSkills" class="px-3 py-1 bg-indigo-50 text-indigo-700 rounded-xl text-sm font-semibold">{{ skill }}</span>
+        </div>
+
+        <button (click)="showApplyModal.set(true)" class="bg-indigo-600 text-white px-8 py-3 rounded-2xl font-bold hover:bg-indigo-700 transition-colors flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+          </svg>
+          Apply Now
+        </button>
+      </div>
+
+      <!-- Job Description -->
+      <div class="bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
+        <h2 class="text-xl font-black text-gray-900 mb-4">Job Description</h2>
+        <p class="text-gray-600 leading-relaxed whitespace-pre-line">{{ job().description }}</p>
+      </div>
+    </div>
+
+    <!-- Apply Modal -->
+    <div *ngIf="showApplyModal()" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+      <div class="bg-white rounded-3xl p-8 w-full max-w-md shadow-2xl animate-scale-in">
+        <div class="flex items-center justify-between mb-6">
+          <h2 class="text-xl font-black text-gray-900">Apply for {{ job()?.title }}</h2>
+          <button (click)="showApplyModal.set(false)" class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center hover:bg-gray-200">
+            <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </button>
+        </div>
+        <form [formGroup]="applyForm" (ngSubmit)="apply()" class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-2">Select Resume</label>
+            <select formControlName="resumeId" class="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-gray-50">
+              <option value="">Choose a resume...</option>
+              <optgroup label="Built Resumes" *ngIf="builtResumes().length > 0">
+                <option *ngFor="let r of builtResumes()" [value]="r.id">{{ r.title }}{{ r.isDefault ? ' (Default)' : '' }}</option>
+              </optgroup>
+              <optgroup label="Uploaded Resumes" *ngIf="uploadedResumes().length > 0">
+                <option *ngFor="let r of uploadedResumes()" [value]="r.id">📄 {{ r.title }}{{ r.isDefault ? ' (Default)' : '' }}</option>
+              </optgroup>
+            </select>
+            <p *ngIf="resumes().length === 0" class="text-xs text-yellow-600 mt-1 font-semibold">
+              No resumes found. <a routerLink="/resumes" class="underline">Create or upload one first.</a>
+            </p>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-2">Cover Letter (Optional)</label>
+            <textarea formControlName="coverLetter" rows="4" placeholder="Tell them why you're a great fit..." class="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-gray-50 resize-none"></textarea>
+          </div>
+          <div *ngIf="applyError()" class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm">{{ applyError() }}</div>
+          <div class="flex gap-3">
+            <button type="button" (click)="showApplyModal.set(false)" class="flex-1 bg-gray-100 text-gray-700 py-3 rounded-xl font-semibold hover:bg-gray-200">Cancel</button>
+            <button type="submit" [disabled]="applyForm.invalid || applying()" class="flex-1 bg-indigo-600 text-white py-3 rounded-xl font-bold hover:bg-indigo-700 disabled:opacity-50">
+              {{ applying() ? 'Applying...' : 'Submit Application' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,33 @@
+<div
+  *ngIf="uiStore.toast()"
+  [@toastAnimation]
+  class="fixed bottom-4 right-4 px-6 py-4 rounded-lg shadow-lg flex items-center gap-3 text-white z-50"
+  [ngClass]="{
+    'bg-green-500': uiStore.toast()?.type === 'success',
+    'bg-red-500': uiStore.toast()?.type === 'error',
+    'bg-blue-500': uiStore.toast()?.type === 'info',
+    'bg-yellow-500': uiStore.toast()?.type === 'warning'
+  }"
+>
+  <svg
+    *ngIf="uiStore.toast()?.type === 'success'"
+    class="w-6 h-6"
+    fill="currentColor"
+    viewBox="0 0 24 24"
+  >
+    <path
+      d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"
+    ></path>
+  </svg>
+  <svg
+    *ngIf="uiStore.toast()?.type === 'error'"
+    class="w-6 h-6"
+    fill="currentColor"
+    viewBox="0 0 24 24"
+  >
+    <path
+      d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
+    ></path>
+  </svg>
+  <span>{{ uiStore.toast()?.message }}</span>
+</div>

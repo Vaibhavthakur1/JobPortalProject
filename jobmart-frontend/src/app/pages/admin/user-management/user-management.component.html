@@ -1,0 +1,124 @@
+<div class="min-h-screen pt-28 pb-12 px-4 transition-colors duration-300"
+     [ngClass]="uiStore.isDarkMode() ? 'bg-gray-950' : 'bg-slate-50'">
+  <div class="max-w-6xl mx-auto">
+
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-8">
+      <div>
+        <h1 class="text-3xl font-black" [ngClass]="uiStore.isDarkMode() ? 'text-white' : 'text-gray-900'">User Management</h1>
+        <p class="mt-1 text-sm" [ngClass]="uiStore.isDarkMode() ? 'text-gray-400' : 'text-gray-500'">
+          {{ totalCount() }} total users
+        </p>
+      </div>
+      <!-- Search -->
+      <div class="relative">
+        <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+        </svg>
+        <input [formControl]="searchCtrl" type="text" placeholder="Search users..."
+          class="pl-9 pr-4 py-2.5 rounded-xl border text-sm w-64 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
+          [ngClass]="uiStore.isDarkMode() ? 'bg-gray-800 border-gray-700 text-white placeholder-gray-500' : 'bg-white border-gray-200 text-gray-900'" />
+      </div>
+    </div>
+
+    <!-- Table card -->
+    <div class="rounded-2xl border overflow-hidden shadow-sm transition-colors"
+         [ngClass]="uiStore.isDarkMode() ? 'bg-gray-900 border-gray-700/50' : 'bg-white border-gray-100'">
+
+      <!-- Loading -->
+      <div *ngIf="loading()" class="p-6 space-y-3">
+        <div *ngFor="let i of [1,2,3,4,5]" class="animate-pulse h-14 rounded-xl"
+             [ngClass]="uiStore.isDarkMode() ? 'bg-gray-800' : 'bg-gray-100'"></div>
+      </div>
+
+      <!-- Empty -->
+      <div *ngIf="!loading() && filtered().length === 0" class="py-16 text-center">
+        <svg class="w-12 h-12 mx-auto mb-3 opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+        </svg>
+        <p class="font-semibold" [ngClass]="uiStore.isDarkMode() ? 'text-gray-500' : 'text-gray-400'">No users found</p>
+      </div>
+
+      <!-- Table -->
+      <table *ngIf="!loading() && filtered().length > 0" class="w-full">
+        <thead>
+          <tr [ngClass]="uiStore.isDarkMode() ? 'bg-gray-800/50 border-b border-gray-700' : 'bg-gray-50 border-b border-gray-100'">
+            <th class="text-left px-6 py-4 text-xs font-black uppercase tracking-wider"
+                [ngClass]="uiStore.isDarkMode() ? 'text-gray-400' : 'text-gray-500'">User</th>
+            <th class="text-left px-6 py-4 text-xs font-black uppercase tracking-wider"
+                [ngClass]="uiStore.isDarkMode() ? 'text-gray-400' : 'text-gray-500'">Role</th>
+            <th class="text-left px-6 py-4 text-xs font-black uppercase tracking-wider"
+                [ngClass]="uiStore.isDarkMode() ? 'text-gray-400' : 'text-gray-500'">Status</th>
+            <th class="text-left px-6 py-4 text-xs font-black uppercase tracking-wider"
+                [ngClass]="uiStore.isDarkMode() ? 'text-gray-400' : 'text-gray-500'">Joined</th>
+            <th class="text-left px-6 py-4 text-xs font-black uppercase tracking-wider"
+                [ngClass]="uiStore.isDarkMode() ? 'text-gray-400' : 'text-gray-500'">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y" [ngClass]="uiStore.isDarkMode() ? 'divide-gray-800' : 'divide-gray-50'">
+          <tr *ngFor="let user of filtered()" class="transition-colors"
+              [ngClass]="uiStore.isDarkMode() ? 'hover:bg-gray-800/50' : 'hover:bg-gray-50'">
+            <td class="px-6 py-4">
+              <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-indigo-100 flex items-center justify-center flex-shrink-0">
+                  <span class="text-sm font-black text-indigo-600">{{ user.fullName?.charAt(0)?.toUpperCase() }}</span>
+                </div>
+                <div>
+                  <p class="font-bold text-sm" [ngClass]="uiStore.isDarkMode() ? 'text-white' : 'text-gray-900'">{{ user.fullName }}</p>
+                  <p class="text-xs" [ngClass]="uiStore.isDarkMode() ? 'text-gray-500' : 'text-gray-400'">{{ user.email }}</p>
+                </div>
+              </div>
+            </td>
+            <td class="px-6 py-4">
+              <select [value]="user.role" (change)="changeRole(user.id, $any($event.target).value)"
+                class="border rounded-lg px-2 py-1.5 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
+                [ngClass]="uiStore.isDarkMode() ? 'bg-gray-800 border-gray-600 text-gray-200' : 'bg-gray-50 border-gray-200 text-gray-700'">
+                <option value="JobSeeker">JobSeeker</option>
+                <option value="Recruiter">Recruiter</option>
+                <option value="Admin">Admin</option>
+              </select>
+            </td>
+            <td class="px-6 py-4">
+              <span class="px-2.5 py-1 rounded-full text-xs font-bold"
+                [ngClass]="user.isEmailVerified
+                  ? 'bg-green-100 text-green-700'
+                  : 'bg-yellow-100 text-yellow-700'">
+                {{ user.isEmailVerified ? '✓ Verified' : '⏳ Unverified' }}
+              </span>
+            </td>
+            <td class="px-6 py-4 text-sm" [ngClass]="uiStore.isDarkMode() ? 'text-gray-400' : 'text-gray-500'">
+              {{ user.createdAt + 'Z' | date:'mediumDate' }}
+            </td>
+            <td class="px-6 py-4">
+              <button (click)="deactivate(user.id)"
+                class="text-xs font-bold text-red-500 hover:text-red-400 px-3 py-1.5 rounded-lg transition-colors"
+                [ngClass]="uiStore.isDarkMode() ? 'hover:bg-red-500/10' : 'hover:bg-red-50'">
+                Deactivate
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Pagination -->
+      <div class="px-6 py-4 border-t flex items-center justify-between"
+           [ngClass]="uiStore.isDarkMode() ? 'border-gray-700' : 'border-gray-100'">
+        <p class="text-sm" [ngClass]="uiStore.isDarkMode() ? 'text-gray-400' : 'text-gray-500'">
+          Page {{ page() }} · {{ filtered().length }} users shown
+        </p>
+        <div class="flex gap-2">
+          <button (click)="prevPage()" [disabled]="page() === 1"
+            class="px-3 py-1.5 rounded-lg border text-sm font-semibold disabled:opacity-40 transition-all"
+            [ngClass]="uiStore.isDarkMode() ? 'border-gray-700 text-gray-300 hover:bg-gray-800' : 'border-gray-200 text-gray-600 hover:bg-gray-50'">
+            ← Prev
+          </button>
+          <button (click)="nextPage()"
+            class="px-3 py-1.5 rounded-lg border text-sm font-semibold transition-all"
+            [ngClass]="uiStore.isDarkMode() ? 'border-gray-700 text-gray-300 hover:bg-gray-800' : 'border-gray-200 text-gray-600 hover:bg-gray-50'">
+            Next →
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

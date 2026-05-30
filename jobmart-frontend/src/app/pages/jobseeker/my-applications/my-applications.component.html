@@ -1,0 +1,112 @@
+<div class="min-h-screen bg-slate-50 pt-28 pb-12 px-4">
+  <div class="max-w-5xl mx-auto">
+    <div class="flex items-center justify-between mb-8">
+      <div>
+        <h1 class="text-3xl font-black text-gray-900 font-headline">My Applications</h1>
+        <p class="text-gray-500 mt-1">Track all your job applications</p>
+      </div>
+      <a routerLink="/jobs" class="bg-indigo-600 text-white px-5 py-2.5 rounded-xl font-bold text-sm hover:bg-indigo-700 transition-colors flex items-center gap-2">
+        <span class="material-symbols-outlined text-base">add</span>Apply More
+      </a>
+    </div>
+
+    <!-- Status Filter -->
+    <div class="flex flex-wrap gap-2 mb-6">
+      <button *ngFor="let s of statuses" (click)="setFilter(s)"
+        class="px-4 py-2 rounded-xl text-sm font-semibold transition-all"
+        [ngClass]="filterStatus() === s ? 'bg-indigo-600 text-white' : 'bg-white text-gray-600 border border-gray-200 hover:border-indigo-300'">
+        {{ s }}
+      </button>
+    </div>
+
+    <!-- Loading -->
+    <div *ngIf="loading()" class="space-y-3">
+      <div *ngFor="let i of [1,2,3,4]" class="animate-pulse bg-white rounded-2xl h-24"></div>
+    </div>
+
+    <!-- Empty -->
+    <div *ngIf="!loading() && filtered().length === 0"
+      class="text-center py-20 bg-white rounded-3xl border border-gray-100">
+      <span class="material-symbols-outlined text-5xl text-gray-300 mb-3 block">assignment</span>
+      <p class="text-xl font-bold text-gray-500">No applications found</p>
+    </div>
+
+    <!-- List -->
+    <div class="space-y-3">
+      <div *ngFor="let app of filtered()"
+        class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 hover:border-indigo-200 transition-all">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-4">
+            <div class="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center">
+              <span class="material-symbols-outlined text-indigo-600">work</span>
+            </div>
+            <div>
+              <p class="font-black text-gray-900">Application #{{ app.id.slice(0,8) }}</p>
+              <p class="text-sm text-gray-400 mt-0.5">Applied {{ app.createdAt + 'Z' | date:'mediumDate' }}</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-3">
+            <span class="px-3 py-1.5 rounded-full text-xs font-bold" [ngClass]="getStatusClass(app.status)">
+              {{ app.status }}
+            </span>
+            <button
+              *ngIf="app.status !== 'Withdrawn' && app.status !== 'Rejected' && app.status !== 'Accepted'"
+              (click)="confirmWithdraw(app.id)"
+              class="text-xs font-semibold text-red-500 hover:text-red-700 px-3 py-1.5 rounded-xl hover:bg-red-50 transition-colors">
+              Withdraw
+            </button>
+          </div>
+        </div>
+
+        <!-- Status Timeline -->
+        <div *ngIf="app.history && app.history.length > 0" class="mt-4 pt-4 border-t border-gray-50">
+          <div class="flex items-center gap-2 overflow-x-auto pb-1">
+            <div *ngFor="let h of app.history; let last = last" class="flex items-center gap-2 flex-shrink-0">
+              <div class="flex flex-col items-center">
+                <div class="w-2 h-2 rounded-full bg-indigo-400"></div>
+                <span class="text-[10px] text-gray-400 mt-1 whitespace-nowrap">{{ h.toStatus }}</span>
+              </div>
+              <div *ngIf="!last" class="w-8 h-px bg-gray-200"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Withdraw Confirmation Modal ───────────────────────────────────────── -->
+<div *ngIf="withdrawTargetId()"
+  class="fixed inset-0 z-50 flex items-center justify-center p-4"
+  (click)="cancelWithdraw($event)">
+  <div class="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
+
+  <div class="relative bg-white rounded-3xl shadow-2xl w-full max-w-sm p-6"
+    (click)="$event.stopPropagation()">
+
+    <!-- Icon -->
+    <div class="w-14 h-14 bg-red-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+      <svg class="w-7 h-7 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+      </svg>
+    </div>
+
+    <h3 class="text-lg font-black text-gray-900 text-center mb-2">Withdraw Application?</h3>
+    <p class="text-sm text-gray-500 text-center mb-6 leading-relaxed">
+      This action cannot be undone. The recruiter will be notified that you've withdrawn.
+    </p>
+
+    <div class="flex gap-3">
+      <button (click)="cancelWithdraw()"
+        class="flex-1 px-4 py-3 rounded-xl border border-gray-200 text-sm font-bold text-gray-700 hover:bg-gray-50 transition-colors">
+        Keep Application
+      </button>
+      <button (click)="doWithdraw()" [disabled]="withdrawing()"
+        class="flex-1 px-4 py-3 rounded-xl bg-red-500 text-white text-sm font-bold hover:bg-red-600 transition-colors disabled:opacity-50 flex items-center justify-center gap-2">
+        <div *ngIf="withdrawing()" class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+        {{ withdrawing() ? 'Withdrawing...' : 'Yes, Withdraw' }}
+      </button>
+    </div>
+  </div>
+</div>

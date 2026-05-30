@@ -1,0 +1,9 @@
+<div class="min-h-screen transition-colors duration-300"
+     [class.bg-slate-50]="!uiStore.isDarkMode()"
+     [class.bg-gray-950]="uiStore.isDarkMode()">
+  <app-navbar *ngIf="authStore.isAuthenticated() && !isLanding()"></app-navbar>
+  <main [class.pt-20]="authStore.isAuthenticated() && !isLanding()" class="transition-all">
+    <router-outlet></router-outlet>
+  </main>
+  <app-toast></app-toast>
+</div>

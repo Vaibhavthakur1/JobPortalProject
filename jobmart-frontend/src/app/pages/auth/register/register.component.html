@@ -1,0 +1,126 @@
+<div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 to-blue-50 px-4">
+  <div class="w-full max-w-md">
+    <div class="bg-white rounded-2xl shadow-xl p-8">
+
+      <!-- Header -->
+      <div class="text-center mb-8">
+        <h1 class="text-3xl font-bold text-indigo-600 mb-2">JobMart</h1>
+        <p class="text-gray-600">Create your account</p>
+      </div>
+
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-4">
+
+        <!-- Full Name -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+          <input
+            type="text"
+            formControlName="fullName"
+            placeholder="John Doe"
+            autocomplete="name"
+            class="w-full px-4 py-3 rounded-xl border text-sm transition-all focus:outline-none focus:ring-2"
+            [ngClass]="(form.get('fullName')?.invalid && form.get('fullName')?.touched)
+              ? 'border-red-400 bg-red-50 focus:ring-red-400'
+              : 'border-gray-200 bg-gray-50 focus:ring-indigo-500'"
+          />
+          <div *ngIf="form.get('fullName')?.invalid && form.get('fullName')?.touched" class="mt-1.5 text-xs text-red-500 font-medium">
+            <span *ngIf="form.get('fullName')?.errors?.['required']">Full name is required.</span>
+          </div>
+        </div>
+
+        <!-- Email -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+          <input
+            type="email"
+            formControlName="email"
+            placeholder="you@example.com"
+            autocomplete="off"
+            class="w-full px-4 py-3 rounded-xl border text-sm transition-all focus:outline-none focus:ring-2"
+            [ngClass]="(form.get('email')?.invalid && form.get('email')?.touched)
+              ? 'border-red-400 bg-red-50 focus:ring-red-400'
+              : 'border-gray-200 bg-gray-50 focus:ring-indigo-500'"
+          />
+          <div *ngIf="form.get('email')?.invalid && form.get('email')?.touched" class="mt-1.5 text-xs text-red-500 font-medium">
+            <span *ngIf="form.get('email')?.errors?.['required']">Email is required.</span>
+            <span *ngIf="form.get('email')?.errors?.['email']">Enter a valid email address.</span>
+          </div>
+        </div>
+
+        <!-- Password -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+          <div class="relative">
+            <input
+              [type]="showPassword ? 'text' : 'password'"
+              formControlName="password"
+              placeholder="••••••••"
+              autocomplete="new-password"
+              class="w-full px-4 py-3 pr-11 rounded-xl border text-sm transition-all focus:outline-none focus:ring-2"
+              [ngClass]="(form.get('password')?.invalid && form.get('password')?.touched)
+                ? 'border-red-400 bg-red-50 focus:ring-red-400'
+                : 'border-gray-200 bg-gray-50 focus:ring-indigo-500'"
+            />
+            <button type="button" (click)="showPassword = !showPassword"
+              class="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-lg text-gray-400 hover:text-gray-700 transition-colors">
+              <svg *ngIf="!showPassword" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+              </svg>
+              <svg *ngIf="showPassword" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/>
+              </svg>
+            </button>
+          </div>
+          <div *ngIf="form.get('password')?.invalid && form.get('password')?.touched" class="mt-1.5 text-xs text-red-500 font-medium">
+            <span *ngIf="form.get('password')?.errors?.['required']">Password is required.</span>
+            <span *ngIf="form.get('password')?.errors?.['minlength']">Password must be at least 6 characters.</span>
+          </div>
+        </div>
+
+        <!-- Account Type -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Account Type</label>
+          <select
+            formControlName="role"
+            class="w-full px-4 py-3 rounded-xl border text-sm transition-all focus:outline-none focus:ring-2 bg-gray-50 text-gray-900"
+            [ngClass]="(form.get('role')?.invalid && form.get('role')?.touched)
+              ? 'border-red-400 focus:ring-red-400'
+              : 'border-gray-200 focus:ring-indigo-500'"
+          >
+            <option value="">Select a role</option>
+            <option value="JobSeeker">Job Seeker</option>
+            <option value="Recruiter">Recruiter</option>
+          </select>
+          <div *ngIf="form.get('role')?.invalid && form.get('role')?.touched" class="mt-1.5 text-xs text-red-500 font-medium">
+            <span *ngIf="form.get('role')?.errors?.['required']">Please select an account type.</span>
+          </div>
+        </div>
+
+        <!-- Server error -->
+        <div *ngIf="authStore.error()" class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+          {{ authStore.error() }}
+        </div>
+
+        <!-- Submit -->
+        <button
+          type="submit"
+          [disabled]="form.invalid || authStore.isLoading()"
+          class="w-full bg-indigo-600 text-white py-3 rounded-lg font-semibold hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+        >
+          <div *ngIf="authStore.isLoading()" class="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+          {{ authStore.isLoading() ? 'Creating account...' : 'Create Account' }}
+        </button>
+      </form>
+
+      <!-- Login link -->
+      <div class="mt-8 pt-8 border-t border-gray-200 text-center">
+        <p class="text-gray-600">
+          Already have an account?
+          <a routerLink="/login" class="text-indigo-600 hover:text-indigo-700 font-medium">Sign In</a>
+        </p>
+      </div>
+
+    </div>
+  </div>
+</div>

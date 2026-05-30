@@ -1,0 +1,44 @@
+<div class="min-h-screen bg-slate-50 pt-28 pb-12 px-4">
+  <div class="max-w-5xl mx-auto">
+    <div class="flex items-center justify-between mb-8">
+      <div>
+        <h1 class="text-3xl font-black text-gray-900 font-headline">Flagged Jobs</h1>
+        <p class="text-gray-500 mt-1">Review and moderate reported job listings</p>
+      </div>
+      <div class="flex gap-2">
+        <button *ngFor="let s of statuses" (click)="statusFilter.set(s); load()" class="px-4 py-2 rounded-xl text-sm font-bold transition-all" [ngClass]="statusFilter() === s ? 'bg-indigo-600 text-white' : 'bg-white text-gray-600 border border-gray-200 hover:border-indigo-300'">{{ s }}</button>
+      </div>
+    </div>
+
+    <div *ngIf="loading()" class="space-y-3">
+      <div *ngFor="let i of [1,2,3]" class="animate-pulse bg-white rounded-2xl h-24"></div>
+    </div>
+
+    <div *ngIf="!loading() && flags().length === 0" class="text-center py-20 bg-white rounded-3xl border border-gray-100">
+      <span class="material-symbols-outlined text-5xl text-gray-300 mb-3 block">flag</span>
+      <p class="text-xl font-bold text-gray-500">No flagged jobs</p>
+    </div>
+
+    <div class="space-y-3">
+      <div *ngFor="let flag of flags()" class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+        <div class="flex items-start justify-between">
+          <div class="flex items-start gap-4">
+            <div class="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center flex-shrink-0">
+              <span class="material-symbols-outlined text-red-500">flag</span>
+            </div>
+            <div>
+              <p class="font-black text-gray-900">Job #{{ flag.jobId?.slice(0,8) }}</p>
+              <p class="text-sm text-gray-600 mt-1">{{ flag.reason }}</p>
+              <p class="text-xs text-gray-400 mt-1">Flagged {{ flag.createdAt + 'Z' | date:'mediumDate' }}</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="px-3 py-1 rounded-full text-xs font-bold" [ngClass]="flag.status === 'Pending' ? 'bg-yellow-100 text-yellow-700' : flag.status === 'Reviewed' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'">{{ flag.status }}</span>
+            <button *ngIf="flag.status === 'Pending'" (click)="review(flag.id, 'Reviewed')" class="px-3 py-1.5 bg-green-50 text-green-700 rounded-xl text-xs font-bold hover:bg-green-100 transition-colors">Approve</button>
+            <button *ngIf="flag.status === 'Pending'" (click)="review(flag.id, 'Dismissed')" class="px-3 py-1.5 bg-gray-100 text-gray-600 rounded-xl text-xs font-bold hover:bg-gray-200 transition-colors">Dismiss</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
